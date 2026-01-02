@@ -75,8 +75,8 @@ RUN mkdir -p AppDir/lib64 && \
     cp /lib64/ld-linux-x86-64.so.2 AppDir/lib64/
 
 # Copy the existing icon for the .desktop file and .DirIcon
-RUN cp ./WaffleUI/waffleCopyPRO-icon.png AppDir/QtMikMod-icon.png
-RUN cp ./WaffleUI/waffleCopyPRO-icon.png AppDir/.DirIcon
+RUN cp ./bitmaps/icon.png AppDir/QtMikMod-icon.png
+RUN cp ./bitmaps/icon.png AppDir/.DirIcon
 
 # Create directories for Qt plugins
 RUN mkdir -p AppDir/usr/lib/qt5/plugins/platforms && \
