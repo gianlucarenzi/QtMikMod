@@ -1,0 +1,59 @@
+name: Build QtMikMod on macOS
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '5.15.2'
+        arch: 'clang_64'
+
+    - name: Install x86_64 Homebrew
+      run: |
+        arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    - name: Install dependencies
+      run: |
+        arch -x86_64 /usr/local/bin/brew install libmikmod
+
+    - name: Build QtMikMod
+      run: |
+        qmake
+        make
+
+    - name: Package Application and Resources
+      run: |
+        macdeployqt QtMikMod.app
+        echo "Copying resource folders to Contents/Resources..."
+        cp -R fonts QtMikMod.app/Contents/Resources/
+        cp -R bitmaps QtMikMod.app/Contents/Resources/
+        cp -R mod QtMikMod.app/Contents/Resources/
+
+    - name: Create DMG Installer
+      run: |
+        hdiutil create -fs HFS+ \
+          -volname "QtMikMod" \
+          -srcfolder "QtMikMod.app" \
+          -ov \
+          -format UDZO \
+          "QtMikMod.dmg"
+
+    - name: Upload DMG Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: QtMikMod-macOS.dmg
+        path: QtMikMod.dmg
