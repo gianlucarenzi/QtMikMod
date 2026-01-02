@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Update apt and install build tools and Qt 5.12
 RUN apt clean && apt update && apt upgrade -y
 RUN apt-cache search portaudio
-RUN apt install -y build-essential git cmake libgl1-mesa-dev qt5-default qttools5-dev-tools libqt5serialport5-dev libfuse2 curl xz-utils libopenmpt-dev portaudio19-dev libsdl2-dev libpulse-dev && \
+RUN apt install -y build-essential git cmake libgl1-mesa-dev qt5-default qttools5-dev-tools libqt5serialport5-dev libfuse2 curl xz-utils libmikmod-dev && \
     rm -rf /var/lib/apt/lists/*
 
 # Download and extract appimagetool
