@@ -43,7 +43,9 @@ RUN cp MikModPlayer AppDir/usr/share/QtMikMod/
 
 # Copy fonts and WaffleUI into the AppDir
 RUN cp -r ./fonts AppDir/usr/share/QtMikMod/
-RUN cp -r ./WaffleUI AppDir/usr/share/QtMikMod/
+RUN cp -r ./mod AppDir/usr/share/QtMikMod/
+RUN cp -r ./bitmaps AppDir/usr/share/QtMikMod/
+
 
 # Manually collect dependencies using ldd
 # This is a simplified version and might need iteration for all dependencies
