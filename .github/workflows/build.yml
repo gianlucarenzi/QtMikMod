@@ -1,24 +1,38 @@
-name: Build QtMikMod Project with Docker
+name: Build QtMikMod on Linux
 
 on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Make build.sh executable
-      run: chmod +x build.sh
+      - name: Build AppImage
+        run: |
+          chmod +x build.sh
+          ./build.sh
+        shell: bash
 
-    - name: Run build script
-      run: ./build.sh
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: QtMikMod-Linux
+          path: dist/QtMikMod-x86_64.AppImage
 
-    - name: Upload AppImage artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: QtMikMod-AppImage
-        path: dist/QtMikMod-x86_64.AppImage
+      - name: Upload Release Asset
+        if: github.event_name == 'release' && github.event.action == 'published'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/QtMikMod-x86_64.AppImage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
