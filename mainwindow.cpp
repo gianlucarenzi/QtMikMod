@@ -6,9 +6,11 @@
 #define TOSTRING(x) STRINGIFY(x)
 #endif
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-    player = new MikModPlayer(this);
-    
+MainWindow::MainWindow(QWidget *parent, QString filename)
+: QMainWindow(parent),
+  player(new MikModPlayer(this)),
+  m_fileName(filename)
+{
     // Set dark gray background for the main window
     this->setStyleSheet("background-color: #555555;");
 
@@ -41,11 +43,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     vuMeter = new VuMeterWidget(this); // Parent is MainWindow
     vuMeter->show(); // Ensure it's visible
 
-    // Directly load the module
-    player->loadModule("mod/stardstm.mod");
-    player->start();
-    player->startLevelPolling(); // Start polling levels
-
     // Connect signals
     connect(player, &MikModPlayer::audioLevels, vuMeter, &VuMeterWidget::setAudioLevels);
     connect(player, &MikModPlayer::songFinished, this, &MainWindow::handleSongFinished);
@@ -55,6 +52,19 @@ MainWindow::~MainWindow() {
     player->stopLevelPolling(); // Stop polling levels
     player->stopPlayback();
 }
+
+void MainWindow::setup()
+{
+    // Directly load the module
+    player->loadModule(m_fileName);
+    player->start();
+    player->startLevelPolling(); // Start polling levels
+}
+void MainWindow::setFilename(QString filename)
+{
+    m_fileName = filename;
+}
+
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Space) { // Example: Spacebar to pause/resume
@@ -86,7 +96,7 @@ void MainWindow::handleSongFinished() {
     player->stopPlayback(); // Ensure playback is stopped
     vuMeter->startDecay(); // Start VU meter decay
     QThread::sleep(3); // Pause for 3 seconds
-    player->loadModule("mod/stardstm.mod"); // Reload the same module
+    player->loadModule(m_fileName); // Reload the same module
     player->start(); // Start playback again
     player->startLevelPolling(); // Start polling levels
 }

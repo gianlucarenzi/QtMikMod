@@ -3,6 +3,7 @@
 #include <QFontDatabase>
 #include <QSettings>
 #include <QDebug>
+#include <QDir>
 
 int main(int argc, char *argv[])
 {
@@ -41,8 +42,15 @@ int main(int argc, char *argv[])
         a.setFont(amigaTopaz);
     }
     
-    
     MainWindow w;
+    if (argc > 1)
+    {
+        w.setFilename(argv[1]);
+        qDebug() << "Filename passed " << argv[1];
+    }
+
+    w.setup();
+
     w.setWindowTitle("MikMod Player Cross-Platform");
     w.resize(400, 150);
     w.show();

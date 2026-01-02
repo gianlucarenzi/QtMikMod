@@ -26,7 +26,8 @@ MikModPlayer::MikModPlayer(QObject *parent)
     connect(this, &MikModPlayer::requestStopPlayback, this, &MikModPlayer::m_stopPlayback);
 }
 
-bool MikModPlayer::initLibrary() {
+bool MikModPlayer::initLibrary()
+{
 #ifdef Q_OS_WIN
     QLibrary lib("libmikmod.dll");
     if (!lib.load()) {
@@ -85,7 +86,8 @@ bool MikModPlayer::initLibrary() {
     return true;
 }
 
-MikModPlayer::~MikModPlayer() {
+MikModPlayer::~MikModPlayer()
+{
     m_stopPlayback(); // Ensure everything is stopped before destruction
     if (m_levelTimer) {
         m_levelTimer->stop();
@@ -106,7 +108,9 @@ MikModPlayer::~MikModPlayer() {
     }
 }
 
-void MikModPlayer::loadModule(const QString &fileName) {
+void MikModPlayer::loadModule(const QString &fileName)
+{
+    qDebug() << "Module to load: " << fileName;
     if (!libLoaded) return;
     if (module) stopPlayback(); // Stop current playback before loading new module
     

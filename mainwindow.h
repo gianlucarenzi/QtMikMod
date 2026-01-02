@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-// #include <QPushButton> // No longer needed
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QLabel> // Added for displaying text
@@ -13,16 +12,17 @@
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr, QString fileName = "mod/stardstm.mod");
     ~MainWindow();
-// private slots: // No longer needed
-//    void handleOpenFile(); // No longer needed
+    void setFilename(QString filename);
+    void setup();
+
 private:
     MikModPlayer *player;
-    // QPushButton *btnOpen; // No longer needed
     QLabel *titleLabel; // Added QLabel member
     QLabel *commitIdLabel; // Added QLabel for commit ID
     VuMeterWidget *vuMeter; // Added VuMeterWidget member
+    QString m_fileName;
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
