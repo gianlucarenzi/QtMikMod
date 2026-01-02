@@ -2,9 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QPushButton>
+// #include <QPushButton> // No longer needed
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QLabel> // Added for displaying text
 #include "mikmodplayer.h"
 
 class MainWindow : public QMainWindow {
@@ -12,11 +13,12 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-private slots:
-    void handleOpenFile();
+// private slots: // No longer needed
+//    void handleOpenFile(); // No longer needed
 private:
     MikModPlayer *player;
-    QPushButton *btnOpen;
+    // QPushButton *btnOpen; // No longer needed
+    QLabel *titleLabel; // Added QLabel member
 };
 #endif
 
