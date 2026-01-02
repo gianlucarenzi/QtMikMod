@@ -4,7 +4,9 @@
 #include <QVector>
 #include <algorithm> // For std::max
 
-MikModPlayer::MikModPlayer(QObject *parent) : QThread(parent) {
+MikModPlayer::MikModPlayer(QObject *parent)
+: QThread(parent)
+{
     libLoaded = initLibrary();
 
     m_levelTimer = new QTimer(this);

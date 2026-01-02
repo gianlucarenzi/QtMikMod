@@ -28,6 +28,14 @@ unix {
     }
 }
 
+macx {
+    ICON = bitmaps/icon.png
+    QMAKE_APPLE_ARCHS = x86_64 arm64
+    QMAKE_BUNDLE_DATA.fonts.files = fonts/TopazPlus_a500_v1.0.ttf
+    QMAKE_BUNDLE_DATA.fonts.path = Contents/Resources/fonts
+    BUNDLE_DATA += QMAKE_BUNDLE_DATA.fonts
+}
+
 HEADERS += mainwindow.h mikmodplayer.h vumeterwidget.h
 SOURCES += main.cpp mainwindow.cpp mikmodplayer.cpp vumeterwidget.cpp
 RESOURCES += resources.qrc
