@@ -28,6 +28,6 @@ unix {
     }
 }
 
-HEADERS += mainwindow.h mikmodplayer.h
-SOURCES += main.cpp mainwindow.cpp mikmodplayer.cpp
+HEADERS += mainwindow.h mikmodplayer.h vumeterwidget.h
+SOURCES += main.cpp mainwindow.cpp mikmodplayer.cpp vumeterwidget.cpp
 RESOURCES += resources.qrc
