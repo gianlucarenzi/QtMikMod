@@ -1,3 +1,6 @@
 /.qmake.stash
 /Makefile
 /MikModPlayer
+*.o
+moc_*.*
+/qrc_resources.cpp
