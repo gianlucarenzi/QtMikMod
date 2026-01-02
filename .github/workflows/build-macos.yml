@@ -37,23 +37,23 @@ jobs:
 
     - name: Package Application and Resources
       run: |
-        macdeployqt QtMikMod.app
+        macdeployqt MikModPlayer.app
         echo "Copying resource folders to Contents/Resources..."
-        cp -R fonts QtMikMod.app/Contents/Resources/
-        cp -R bitmaps QtMikMod.app/Contents/Resources/
-        cp -R mod QtMikMod.app/Contents/Resources/
+        cp -R fonts MikModPlayer.app/Contents/Resources/
+        cp -R bitmaps MikModPlayer.app/Contents/Resources/
+        cp -R mod MikModPlayer.app/Contents/Resources/
 
     - name: Create DMG Installer
       run: |
         hdiutil create -fs HFS+ \
-          -volname "QtMikMod" \
-          -srcfolder "QtMikMod.app" \
+          -volname "MikModPlayer" \
+          -srcfolder "MikModPlayer.app" \
           -ov \
           -format UDZO \
-          "QtMikMod.dmg"
+          "MikModPlayer.dmg"
 
     - name: Upload DMG Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: QtMikMod-macOS.dmg
-        path: QtMikMod.dmg
+        name: MikModPlayer-macOS.dmg
+        path: MikModPlayer.dmg
