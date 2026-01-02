@@ -3,6 +3,7 @@
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
+    a.setWindowIcon(QIcon(":/bitmaps/icon.ico"));
     
     MainWindow w;
     w.setWindowTitle("MikMod Player Cross-Platform");

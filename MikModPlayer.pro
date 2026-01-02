@@ -26,3 +26,4 @@ unix {
 
 HEADERS += mainwindow.h mikmodplayer.h
 SOURCES += main.cpp mainwindow.cpp mikmodplayer.cpp
+RESOURCES += resources.qrc
