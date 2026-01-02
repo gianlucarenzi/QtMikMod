@@ -4,6 +4,10 @@ TARGET = MikModPlayer
 TEMPLATE = app
 CONFIG += c++11
 
+# Get Git commit ID for versioning
+GIT_COMMIT_ID = $$system(git rev-parse --short HEAD)
+DEFINES += GIT_COMMIT_ID=\\\"$$GIT_COMMIT_ID\\\"
+
 # --- CONFIGURAZIONE WINDOWS (MSVC / MinGW) ---
 win32 {
     # Su Windows usiamo QLibrary, quindi serve solo l'header per compilare

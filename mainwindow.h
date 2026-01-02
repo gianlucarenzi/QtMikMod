@@ -19,6 +19,7 @@ private:
     MikModPlayer *player;
     // QPushButton *btnOpen; // No longer needed
     QLabel *titleLabel; // Added QLabel member
+    QLabel *commitIdLabel; // Added QLabel for commit ID
 };
 #endif
 
