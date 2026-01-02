@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
     <file>bitmaps/icon.ico</file>
+    <file>fonts/TopazPlus_a500_v1.0.ttf</file>
 </qresource>
 </RCC>
