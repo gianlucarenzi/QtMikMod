@@ -1,0 +1,36 @@
+name: Build QtMikMod Project
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install Qt 5.12
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: 5.12.12
+        host: linux
+        target: desktop
+        arch: gcc_64
+
+    - name: Install libmikmod-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libmikmod-dev
+
+    - name: Create build directory
+      run: mkdir build
+
+    - name: Configure with qmake
+      working-directory: build
+      run: qmake ../MikModPlayer.pro
+
+    - name: Build project
+      working-directory: build
+      run: make -j$(nproc)
