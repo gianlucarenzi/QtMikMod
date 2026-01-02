@@ -1,4 +1,4 @@
-name: Build QtMikMod Project
+name: Build QtMikMod Project with Docker
 
 on:
   workflow_dispatch:
@@ -11,26 +11,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Install Qt 5.12
-      uses: jurplel/install-qt-action@v3
+    - name: Make build.sh executable
+      run: chmod +x build.sh
+
+    - name: Run build script
+      run: ./build.sh
+
+    - name: Upload AppImage artifact
+      uses: actions/upload-artifact@v4
       with:
-        version: 5.12.12
-        host: linux
-        target: desktop
-        arch: gcc_64
-
-    - name: Install libmikmod-dev
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libmikmod-dev
-
-    - name: Create build directory
-      run: mkdir build
-
-    - name: Configure with qmake
-      working-directory: build
-      run: qmake ../MikModPlayer.pro
-
-    - name: Build project
-      working-directory: build
-      run: make -j$(nproc)
+        name: QtMikMod-AppImage
+        path: dist/QtMikMod-x86_64.AppImage
