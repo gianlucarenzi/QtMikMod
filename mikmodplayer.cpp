@@ -35,54 +35,53 @@ bool MikModPlayer::initLibrary()
         return false;
     }
 
+	// Corrected function's casts
     p_MikMod_RegisterAllDrivers = (v_v)lib.resolve("MikMod_RegisterAllDrivers");
     p_MikMod_RegisterAllLoaders = (v_v)lib.resolve("MikMod_RegisterAllLoaders");
     p_MikMod_Init = (i_p)lib.resolve("MikMod_Init");
     p_MikMod_Exit = (v_v)lib.resolve("MikMod_Exit");
     p_Player_Load = (m_p)lib.resolve("Player_Load");
-    p_Player_Start = (v_v)lib.resolve("Player_Start");
+    p_Player_Start = (v_m_v)lib.resolve("Player_Start");
     p_Player_Stop = (v_v)lib.resolve("Player_Stop");
     p_Player_Active = (i_v)lib.resolve("Player_Active");
     p_Player_Free = (v_m)lib.resolve("Player_Free");
     p_MikMod_Update = (v_v)lib.resolve("MikMod_Update");
-    p_Player_SetVolume = (v_i)lib.resolve("Player_SetVolume"); // Resolve Player_SetVolume
-    p_Player_TogglePause = (v_v)lib.resolve("Player_TogglePause"); // Resolve Player_TogglePause
-    p_Player_QueryVoices = (i_uw_vp)lib.resolve("Player_QueryVoices"); // Resolve Player_QueryVoices
-    p_Voice_RealVolume = (ul_sb)lib.resolve("Voice_RealVolume"); // Resolve Voice_RealVolume
-    p_Player_GetChannelVoice = (sb_ub)lib.resolve("Player_GetChannelVoice"); // Resolve Player_GetChannelVoice
+    p_Player_SetVolume = (v_i)lib.resolve("Player_SetVolume");
+    p_Player_TogglePause = (v_v)lib.resolve("Player_TogglePause");
+    p_Player_QueryVoices = (i_uw_vp)lib.resolve("Player_QueryVoices");
+    p_Voice_RealVolume = (ul_sb)lib.resolve("Voice_RealVolume");
+    p_Player_GetChannelVoice = (sb_ub)lib.resolve("Player_GetChannelVoice");
 
     p_md_mode = (uint*)lib.resolve("md_mode");
     p_md_mixfreq = (uint*)lib.resolve("md_mixfreq");
     p_md_devicebuffer = (uint*)lib.resolve("md_devicebuffer");
-    p_Player_Volume = (int*)lib.resolve("Player_Volume"); // Resolve Player_Volume
+    p_Player_Volume = (int*)lib.resolve("Player_Volume");
 
-    if (!p_MikMod_Init || !p_md_mode || !p_Player_SetVolume || !p_Player_TogglePause || !p_Player_QueryVoices || !p_Voice_RealVolume || !p_Player_GetChannelVoice) return false;
+    // Check critical functions
+    if (!p_MikMod_Init || !p_md_mode || !p_Player_SetVolume || !p_Player_TogglePause ||
+        !p_Player_QueryVoices || !p_Voice_RealVolume || !p_Player_GetChannelVoice)
+        return false;
 
-    // Usiamo DMODE_16BITS (con la S) per compatibilità MSVC/DLL
+    // Audio Mode Configuration
     *p_md_mode = DMODE_SOFT_MUSIC | DMODE_INTERP | DMODE_STEREO | DMODE_16BITS;
     *p_md_mixfreq = 44100;
-    
-    if(p_md_devicebuffer) 
-        *p_md_devicebuffer = 30; 
+    if (p_md_devicebuffer)
+        *p_md_devicebuffer = 30;
 
+    // Init Library
     p_MikMod_RegisterAllDrivers();
     p_MikMod_RegisterAllLoaders();
     if (p_MikMod_Init((char*)"")) return false;
+
 #else
-    // LINUX / MACOS
-    // Correzione: DMODE_16BITS
+    // Linux/macOS
     md_mode = DMODE_SOFT_MUSIC | DMODE_INTERP | DMODE_STEREO | DMODE_16BITS;
     md_mixfreq = 44100;
-
-    // Se md_devicebuffer non esiste nella tua versione, MikMod userà i default del driver (ALSA/CoreAudio)
-    // Proviamo a impostarlo solo se la versione della libreria lo supporta. 
-    // In caso di errore persistente su Linux, commenta la riga sotto.
-    // md_devicebuffer = 30; 
-
     MikMod_RegisterAllDrivers();
     MikMod_RegisterAllLoaders();
     if (MikMod_Init((char*)"")) return false;
 #endif
+
     return true;
 }
 
@@ -129,7 +128,7 @@ void MikModPlayer::run() {
     m_paused = false; // Ensure not paused when starting new song
 
 #ifdef Q_OS_WIN
-    p_Player_Start(module);
+    if (p_Player_Start) p_Player_Start(module);
 #else
     Player_Start(module);
 #endif
@@ -146,8 +145,8 @@ void MikModPlayer::updateMikMod() {
 
     if (!m_paused) {
 #ifdef Q_OS_WIN
-        if (p_Player_Active()) {
-            p_MikMod_Update();
+        if (p_Player_Active && p_Player_Active()) {
+            if (p_MikMod_Update) p_MikMod_Update();
         } else {
             // Song finished
             keepPlaying = false;
@@ -177,7 +176,7 @@ void MikModPlayer::pausePlayback() {
 
 bool MikModPlayer::isPlaying() const {
 #ifdef Q_OS_WIN
-    return keepPlaying && !m_paused && p_Player_Active();
+    return keepPlaying && !m_paused && p_Player_Active && p_Player_Active();
 #else
     return keepPlaying && !m_paused && Player_Active();
 #endif
@@ -193,16 +192,14 @@ void MikModPlayer::stopLevelPolling() {
 
 void MikModPlayer::pollAudioLevels() {
     if (!module || m_paused) {
-        emit audioLevels(QVector<float>()); // Emit empty levels if not playing or paused
+        emit audioLevels(QVector<float>()); // Empty if paused/stopped
         return;
     }
 
-    QVector<float> levels(module->numchn, 0.0f); // Create a level for each logical channel
-    float maxVolume = 65535.0f; // MikMod's max real volume is ULONG_MAX (65535)
+    QVector<float> levels(module->numchn, 0.0f);
+    float maxVolume = 65535.0f; 
+    float peakLevel = 0.0f;
 
-    // qDebug() << "pollAudioLevels: module->numchn =" << module->numchn;
-
-    // Iterate through logical channels and get their assigned physical voice and real volume
     for (UBYTE channel = 0; channel < module->numchn; ++channel) {
         SBYTE voice = -1;
 #ifdef Q_OS_WIN
@@ -223,14 +220,16 @@ void MikModPlayer::pollAudioLevels() {
 #else
             volume = Voice_RealVolume(voice);
 #endif
-            
             float normalizedVolume = static_cast<float>(volume) / maxVolume;
-            levels[channel] = normalizedVolume; // Store normalized volume for this channel
-
-            // qDebug() << "    Volume:" << volume << "Normalized:" << normalizedVolume;
+            levels[channel] = normalizedVolume;
+			peakLevel = std::max(peakLevel, normalizedVolume);
+			// qDebug() << "    Volume:" << volume << "Normalized:" << normalizedVolume;
         }
     }
-    // qDebug() << "  Final levels emitted:" << levels;
+
+    // Debug del picco massimo (facoltativo)
+    // qDebug() << "Peak level:" << peakLevel;
+
     emit audioLevels(levels);
 }
 
@@ -286,4 +285,3 @@ void MikModPlayer::m_stopPlayback() {
     quit(); // Exit the event loop
     wait(); // Wait for the thread to finish
 }
-
