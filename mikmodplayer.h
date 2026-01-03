@@ -67,36 +67,37 @@ private slots:
 #ifdef Q_OS_WIN
 #ifndef Q_MOC_RUN
     // -------------------------------------------------
-    // Windows: function pointer typedefs (libmikmod DLL)
+    // Windows: function pointer typedefs (libmikmod)
     // -------------------------------------------------
-    typedef void (*v_v)();
-    typedef int  (*i_p)(char*);
-    typedef int  (*i_v)();
-    typedef MODULE* (*m_p)(char*, int, int);
-    typedef void (*v_m)(MODULE*);
-    typedef void (*v_i)(int);
-    typedef int (*i_uw_vp)(UWORD, VOICEINFO*);
-    typedef ULONG (*ul_sb)(SBYTE);
-    typedef SBYTE (*sb_ub)(UBYTE);
+    typedef void   (*v_v)(void);
+    typedef int    (*i_p)(char*);
+    typedef int    (*i_v)(void);
+    typedef MODULE*(*m_p)(char*, int, int);
+    typedef void   (*v_m)(MODULE*);
+    typedef void   (*v_m_v)(MODULE*);   // Player_Start
+    typedef void   (*v_i)(int);
+    typedef int    (*i_uw_vp)(UWORD, VOICEINFO*);
+    typedef ULONG  (*ul_sb)(SBYTE);
+    typedef SBYTE  (*sb_ub)(UBYTE);
 
-    v_v p_MikMod_RegisterAllDrivers = nullptr;
-    v_v p_MikMod_RegisterAllLoaders = nullptr;
-    i_p p_MikMod_Init = nullptr;
-    v_v p_MikMod_Exit = nullptr;
-    m_p p_Player_Load = nullptr;
-    v_v p_Player_Start = nullptr;
-    v_v p_Player_Stop = nullptr;
-    i_v p_Player_Active = nullptr;
-    v_m p_Player_Free = nullptr;
-    v_v p_MikMod_Update = nullptr;
+    v_v     p_MikMod_RegisterAllDrivers = nullptr;
+    v_v     p_MikMod_RegisterAllLoaders = nullptr;
+    i_p     p_MikMod_Init = nullptr;
+    v_v     p_MikMod_Exit = nullptr;
 
-    v_i p_Player_SetVolume = nullptr;
-    v_v p_Player_TogglePause = nullptr;
+    m_p     p_Player_Load = nullptr;
+    v_m_v   p_Player_Start = nullptr;   // this is right
+    v_v     p_Player_Stop = nullptr;    // void(void)
+    i_v     p_Player_Active = nullptr;
+    v_m     p_Player_Free = nullptr;
+    v_v     p_MikMod_Update = nullptr;
+
+    v_i     p_Player_SetVolume = nullptr;
+    v_v     p_Player_TogglePause = nullptr;
     i_uw_vp p_Player_QueryVoices = nullptr;
-    ul_sb p_Voice_RealVolume = nullptr;
-    sb_ub p_Player_GetChannelVoice = nullptr;
+    ul_sb   p_Voice_RealVolume = nullptr;
+    sb_ub   p_Player_GetChannelVoice = nullptr;
 
-    // Global configuration variables
     uint *p_md_mode = nullptr;
     uint *p_md_mixfreq = nullptr;
     uint *p_md_devicebuffer = nullptr;
