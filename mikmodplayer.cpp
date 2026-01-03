@@ -217,7 +217,6 @@ void MikModPlayer::pollAudioLevels() {
 #endif
             float normalizedVolume = static_cast<float>(volume) / maxVolume;
             levels[channel] = normalizedVolume;
-			peakLevel = std::max(peakLevel, normalizedVolume);
 			// qDebug() << "    Volume:" << volume << "Normalized:" << normalizedVolume;
         }
     }
