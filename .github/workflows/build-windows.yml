@@ -1,0 +1,73 @@
+name: Build QtMikMod on Windows
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: 5.15.2
+          host: windows
+          target: desktop
+          arch: win64_msvc2019_64
+          setup-python: false
+
+      - name: Install vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
+        shell: cmd
+
+      - name: Install libmikmod (vcpkg)
+        run: |
+          .\vcpkg\vcpkg install libmikmod:x64-windows
+        shell: cmd
+
+      - name: Build QtMikMod
+        env:
+          VCPKG_ROOT: ${{ github.workspace }}\vcpkg
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          qmake MikModPlayer.pro
+          nmake
+        shell: cmd
+
+      - name: Deploy and Package
+        run: |
+          $RELEASE_DIR = "release"
+          New-Item -ItemType Directory -Force -Path $RELEASE_DIR
+          Copy-Item MikModPlayer.exe $RELEASE_DIR
+          & "${{ env.Qt5_Dir }}\bin\windeployqt.exe" --force --no-translations --dir $RELEASE_DIR "$RELEASE_DIR\MikModPlayer.exe"
+          Copy-Item fonts -Destination $RELEASE_DIR -Recurse
+          Copy-Item bitmaps -Destination $RELEASE_DIR -Recurse
+          Copy-Item mod -Destination $RELEASE_DIR -Recurse
+          Compress-Archive -Path $RELEASE_DIR\* -DestinationPath MikModPlayer-Windows.zip
+        shell: pwsh
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MikModPlayer-Windows
+          path: MikModPlayer-Windows.zip
+
+      - name: Upload Release Asset
+        if: github.event_name == 'release' && github.event.action == 'published'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: MikModPlayer-Windows.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
