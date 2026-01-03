@@ -50,11 +50,37 @@ jobs:
         run: |
           $RELEASE_DIR = "release"
           New-Item -ItemType Directory -Force -Path $RELEASE_DIR
-          Copy-Item MikModPlayer.exe $RELEASE_DIR
-          & "${{ env.Qt5_Dir }}\bin\windeployqt.exe" --force --no-translations --dir $RELEASE_DIR "$RELEASE_DIR\MikModPlayer.exe"
-          Copy-Item fonts -Destination $RELEASE_DIR -Recurse
-          Copy-Item bitmaps -Destination $RELEASE_DIR -Recurse
-          Copy-Item mod -Destination $RELEASE_DIR -Recurse
+
+          # Trova automaticamente il primo .exe generato
+          $EXE = Get-ChildItem -Path . -Filter *.exe | Where-Object { $_.Name -notmatch "Qt" } | Select-Object -First 1
+          if (-not $EXE) { throw "Nessun eseguibile trovato nella build" }
+
+          # Copia e rinomina sempre in MikModPlayer.exe
+          $DEST_EXE = Join-Path $RELEASE_DIR "MikModPlayer.exe"
+          Copy-Item $EXE.FullName $DEST_EXE
+
+          # Windeployqt sul file rinominato
+          & "${{ env.Qt5_Dir }}\bin\windeployqt.exe" --force --no-translations --dir $RELEASE_DIR $DEST_EXE
+
+          # Copia DLL di vcpkg
+          $VCPKG_DLLS = Get-ChildItem -Path "${{ github.workspace }}\vcpkg\installed\x64-windows\bin" -Filter *.dll
+          foreach ($dll in $VCPKG_DLLS) { Copy-Item $dll.FullName -Destination $RELEASE_DIR }
+
+          # Copia eventuali plugin Qt mancanti
+          $QT_PLUGINS = @("platforms", "imageformats", "styles", "iconengines", "bearer")
+          foreach ($plugin in $QT_PLUGINS) {
+              $src = Join-Path "${{ env.Qt5_Dir }}\plugins" $plugin
+              if (Test-Path $src) {
+                  Copy-Item $src -Destination (Join-Path $RELEASE_DIR $plugin) -Recurse
+              }
+          }
+
+          # Copia risorse aggiuntive
+          Copy-Item fonts -Destination $RELEASE_DIR -Recurse -ErrorAction SilentlyContinue
+          Copy-Item bitmaps -Destination $RELEASE_DIR -Recurse -ErrorAction SilentlyContinue
+          Copy-Item mod -Destination $RELEASE_DIR -Recurse -ErrorAction SilentlyContinue
+
+          # Comprimi tutto in zip
           Compress-Archive -Path $RELEASE_DIR\* -DestinationPath MikModPlayer-Windows.zip
         shell: pwsh
 
