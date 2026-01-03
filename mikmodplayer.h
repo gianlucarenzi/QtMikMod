@@ -30,7 +30,6 @@ signals:
     void audioLevels(const QVector<float>& levels);
     void songFinished();
 
-    // Signals to request actions in the MikModPlayer thread
     void requestStartLevelPolling();
     void requestStopLevelPolling();
     void requestStartUpdateTimer();
@@ -55,8 +54,6 @@ private:
 
 private slots:
     void updateMikMod();
-
-    // Private slots to handle requests from other threads
     void m_startLevelPolling();
     void m_stopLevelPolling();
     void m_startUpdateTimer();
@@ -66,43 +63,40 @@ private slots:
 
 #ifdef Q_OS_WIN
 #ifndef Q_MOC_RUN
-    // -------------------------------------------------
-    // Windows: function pointer typedefs (libmikmod)
-    // -------------------------------------------------
     typedef void   (*v_v)(void);
     typedef int    (*i_p)(char*);
     typedef int    (*i_v)(void);
     typedef MODULE*(*m_p)(char*, int, int);
     typedef void   (*v_m)(MODULE*);
-    typedef void   (*v_m_v)(MODULE*);   // Player_Start
+    typedef void   (*v_m_v)(MODULE*);
     typedef void   (*v_i)(int);
     typedef int    (*i_uw_vp)(UWORD, VOICEINFO*);
     typedef ULONG  (*ul_sb)(SBYTE);
     typedef SBYTE  (*sb_ub)(UBYTE);
 
-    // Solo dichiarazioni
-    v_v     p_MikMod_RegisterAllDrivers;
-    v_v     p_MikMod_RegisterAllLoaders;
-    i_p     p_MikMod_Init;
-    v_v     p_MikMod_Exit;
+    // Puntatori statici per evitare conflitti multipli
+    static v_v     p_MikMod_RegisterAllDrivers;
+    static v_v     p_MikMod_RegisterAllLoaders;
+    static i_p     p_MikMod_Init;
+    static v_v     p_MikMod_Exit;
 
-    m_p     p_Player_Load;
-    v_m_v   p_Player_Start;
-    v_v     p_Player_Stop;
-    i_v     p_Player_Active;
-    v_m     p_Player_Free;
-    v_v     p_MikMod_Update;
+    static m_p     p_Player_Load;
+    static v_m_v   p_Player_Start;
+    static v_v     p_Player_Stop;
+    static i_v     p_Player_Active;
+    static v_m     p_Player_Free;
+    static v_v     p_MikMod_Update;
 
-    v_i     p_Player_SetVolume;
-    v_v     p_Player_TogglePause;
-    i_uw_vp p_Player_QueryVoices;
-    ul_sb   p_Voice_RealVolume;
-    sb_ub   p_Player_GetChannelVoice;
+    static v_i     p_Player_SetVolume;
+    static v_v     p_Player_TogglePause;
+    static i_uw_vp p_Player_QueryVoices;
+    static ul_sb   p_Voice_RealVolume;
+    static sb_ub   p_Player_GetChannelVoice;
 
-    uint *p_md_mode;
-    uint *p_md_mixfreq;
-    uint *p_md_devicebuffer;
-    int  *p_Player_Volume;
+    static uint *p_md_mode;
+    static uint *p_md_mixfreq;
+    static uint *p_md_devicebuffer;
+    static int  *p_Player_Volume;
 #endif
 #endif
 };
