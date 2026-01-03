@@ -65,12 +65,10 @@ bool MikModPlayer::initLibrary()
     // Audio Mode Configuration
     *p_md_mode = DMODE_SOFT_MUSIC | DMODE_INTERP | DMODE_STEREO | DMODE_16BITS;
     *p_md_mixfreq = 44100;
-    if (p_md_devicebuffer)
-        *p_md_devicebuffer = 30;
+    if (p_md_devicebuffer) *p_md_devicebuffer = 30;
 
-    // Init Library
-    p_MikMod_RegisterAllDrivers();
-    p_MikMod_RegisterAllLoaders();
+    if (p_MikMod_RegisterAllDrivers) (*p_MikMod_RegisterAllDrivers)();
+    if (p_MikMod_RegisterAllLoaders) (*p_MikMod_RegisterAllLoaders)();
     if (p_MikMod_Init((char*)"")) return false;
 
 #else
@@ -98,8 +96,8 @@ MikModPlayer::~MikModPlayer()
     }
     if (module) {
 #ifdef Q_OS_WIN
-        if(p_Player_Free) (*p_Player_Free)(module);
-        if(p_MikMod_Exit) (*p_MikMod_Exit)();
+        if (p_Player_Free) (*p_Player_Free)(module);
+        if (p_MikMod_Exit) (*p_MikMod_Exit)();
 #else
         Player_Free(module);
         MikMod_Exit();
@@ -197,8 +195,7 @@ void MikModPlayer::pollAudioLevels() {
     }
 
     QVector<float> levels(module->numchn, 0.0f);
-    float maxVolume = 65535.0f; 
-    float peakLevel = 0.0f;
+    float maxVolume = 65535.0f;
 
     for (UBYTE channel = 0; channel < module->numchn; ++channel) {
         SBYTE voice = -1;
@@ -224,10 +221,6 @@ void MikModPlayer::pollAudioLevels() {
 			// qDebug() << "    Volume:" << volume << "Normalized:" << normalizedVolume;
         }
     }
-
-    // Debug del picco massimo (facoltativo)
-    // qDebug() << "Peak level:" << peakLevel;
-
     emit audioLevels(levels);
 }
 

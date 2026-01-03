@@ -80,28 +80,29 @@ private slots:
     typedef ULONG  (*ul_sb)(SBYTE);
     typedef SBYTE  (*sb_ub)(UBYTE);
 
-    v_v     p_MikMod_RegisterAllDrivers = nullptr;
-    v_v     p_MikMod_RegisterAllLoaders = nullptr;
-    i_p     p_MikMod_Init = nullptr;
-    v_v     p_MikMod_Exit = nullptr;
+    // Solo dichiarazioni
+    v_v     p_MikMod_RegisterAllDrivers;
+    v_v     p_MikMod_RegisterAllLoaders;
+    i_p     p_MikMod_Init;
+    v_v     p_MikMod_Exit;
 
-    m_p     p_Player_Load = nullptr;
-    v_m_v   p_Player_Start = nullptr;   // this is right
-    v_v     p_Player_Stop = nullptr;    // void(void)
-    i_v     p_Player_Active = nullptr;
-    v_m     p_Player_Free = nullptr;
-    v_v     p_MikMod_Update = nullptr;
+    m_p     p_Player_Load;
+    v_m_v   p_Player_Start;
+    v_v     p_Player_Stop;
+    i_v     p_Player_Active;
+    v_m     p_Player_Free;
+    v_v     p_MikMod_Update;
 
-    v_i     p_Player_SetVolume = nullptr;
-    v_v     p_Player_TogglePause = nullptr;
-    i_uw_vp p_Player_QueryVoices = nullptr;
-    ul_sb   p_Voice_RealVolume = nullptr;
-    sb_ub   p_Player_GetChannelVoice = nullptr;
+    v_i     p_Player_SetVolume;
+    v_v     p_Player_TogglePause;
+    i_uw_vp p_Player_QueryVoices;
+    ul_sb   p_Voice_RealVolume;
+    sb_ub   p_Player_GetChannelVoice;
 
-    uint *p_md_mode = nullptr;
-    uint *p_md_mixfreq = nullptr;
-    uint *p_md_devicebuffer = nullptr;
-    int  *p_Player_Volume = nullptr;
+    uint *p_md_mode;
+    uint *p_md_mixfreq;
+    uint *p_md_devicebuffer;
+    int  *p_Player_Volume;
 #endif
 #endif
 };
