@@ -98,8 +98,8 @@ MikModPlayer::~MikModPlayer()
     }
     if (module) {
 #ifdef Q_OS_WIN
-        if(p_Player_Free) p_Player_Free(module);
-        if(p_MikMod_Exit) p_MikMod_Exit();
+        if(p_Player_Free) (*p_Player_Free)(module);
+        if(p_MikMod_Exit) (*p_MikMod_Exit)();
 #else
         Player_Free(module);
         MikMod_Exit();
@@ -115,7 +115,7 @@ void MikModPlayer::loadModule(const QString &fileName)
     
     QByteArray ba = fileName.toLocal8Bit();
 #ifdef Q_OS_WIN
-    module = p_Player_Load(ba.data(), 64, 0);
+    module = (*p_Player_Load)(ba.data(), 64, 0);
 #else
     module = Player_Load(ba.data(), 64, 0);
 #endif
@@ -128,7 +128,7 @@ void MikModPlayer::run() {
     m_paused = false; // Ensure not paused when starting new song
 
 #ifdef Q_OS_WIN
-    if (p_Player_Start) p_Player_Start(module);
+    if (p_Player_Start) (*p_Player_Start)(module);
 #else
     Player_Start(module);
 #endif
@@ -146,7 +146,7 @@ void MikModPlayer::updateMikMod() {
     if (!m_paused) {
 #ifdef Q_OS_WIN
         if (p_Player_Active && p_Player_Active()) {
-            if (p_MikMod_Update) p_MikMod_Update();
+            if (p_MikMod_Update) (*p_MikMod_Update)();
         } else {
             // Song finished
             keepPlaying = false;
@@ -203,9 +203,7 @@ void MikModPlayer::pollAudioLevels() {
     for (UBYTE channel = 0; channel < module->numchn; ++channel) {
         SBYTE voice = -1;
 #ifdef Q_OS_WIN
-        if (p_Player_GetChannelVoice) {
-            voice = p_Player_GetChannelVoice(channel);
-        }
+        if (p_Player_GetChannelVoice) voice = (*p_Player_GetChannelVoice)(channel);
 #else
         voice = Player_GetChannelVoice(channel);
 #endif
@@ -215,7 +213,7 @@ void MikModPlayer::pollAudioLevels() {
             ULONG volume = 0;
 #ifdef Q_OS_WIN
             if (p_Voice_RealVolume) {
-                volume = p_Voice_RealVolume(voice);
+            	volume = (*p_Voice_RealVolume)(voice);
             }
 #else
             volume = Voice_RealVolume(voice);
@@ -261,7 +259,7 @@ void MikModPlayer::m_stopUpdateTimer() {
 void MikModPlayer::m_togglePause() {
     m_paused = !m_paused; // Toggle pause state
 #ifdef Q_OS_WIN
-    if (p_Player_TogglePause) p_Player_TogglePause();
+    if (p_Player_TogglePause) (*p_Player_TogglePause)();
 #else
     Player_TogglePause();
 #endif
@@ -278,7 +276,7 @@ void MikModPlayer::m_stopPlayback() {
     m_stopUpdateTimer();
     m_stopLevelPolling(); // Also stop level polling
 #ifdef Q_OS_WIN
-    if (p_Player_Stop) p_Player_Stop();
+    if (p_Player_Stop) (*p_Player_Stop)();
 #else
     Player_Stop();
 #endif
