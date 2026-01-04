@@ -56,10 +56,17 @@ MikModPlayer::MikModPlayer(QObject *parent)
 bool MikModPlayer::initLibrary()
 {
 #ifdef Q_OS_WIN
-    QLibrary lib("libmikmod.dll");
+    QLibrary lib;
+    lib.setFileName("libmikmod.dll");
     if (!lib.load()) {
-        qCritical() << "Errore: libmikmod.dll non trovata!";
-        return false;
+        qDebug() << "Warning: libmikmod.dll not found.";
+        lib.setFileName("mikmod.dll");
+        if (!lib.load()) {
+            qCritical() << "Error: mikmod.dll not found.";
+            return false;
+        } else {
+            qDebug() << "Alternate mikmod.dll OK";
+        }
     }
 
     p_MikMod_RegisterAllDrivers = (v_v)lib.resolve("MikMod_RegisterAllDrivers");
