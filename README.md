@@ -70,8 +70,8 @@ graph TD
         B --> C{Crea MikModPlayer player
 Crea VuMeterWidget vuMeter
 Crea QTimer m_guiTimer}
-        C --> D[player.start()]
-        C --> E[m_guiTimer.start()]
+                C --> D[player.start()]
+                C --> E[m_guiTimer.start()]
 
         subgraph "Ciclo di Update Grafico"
             E -- timeout --> F[updateVuMeter()]
