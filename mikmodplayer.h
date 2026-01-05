@@ -22,16 +22,11 @@ public:
     void stopPlayback();
     void pausePlayback();
     bool isPlaying() const;
-
-    void startLevelPolling();
-    void stopLevelPolling();
+    QVector<float> getCurrentLevels() const;
 
 signals:
-    void audioLevels(const QVector<float>& levels);
     void songFinished();
 
-    void requestStartLevelPolling();
-    void requestStopLevelPolling();
     void requestStartUpdateTimer();
     void requestStopUpdateTimer();
     void requestTogglePause();
@@ -46,16 +41,12 @@ private:
     bool libLoaded = false;
     bool m_paused = false;
 
-    QTimer *m_levelTimer = nullptr;
     QTimer *m_updateTimer = nullptr;
 
     bool initLibrary();
-    void pollAudioLevels();
 
 private slots:
     void updateMikMod();
-    void m_startLevelPolling();
-    void m_stopLevelPolling();
     void m_startUpdateTimer();
     void m_stopUpdateTimer();
     void m_togglePause();

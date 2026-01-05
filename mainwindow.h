@@ -22,6 +22,7 @@ private:
     QLabel *titleLabel; // Added QLabel member
     QLabel *commitIdLabel; // Added QLabel for commit ID
     VuMeterWidget *vuMeter; // Added VuMeterWidget member
+    QTimer *m_guiTimer; // Timer for GUI updates
     QString m_fileName;
 
 protected:
@@ -30,6 +31,7 @@ protected:
 
 private slots:
     void handleSongFinished(); // New slot for handling song finished event
+    void updateVuMeter(); // Slot for GUI timer
 };
 #endif
 

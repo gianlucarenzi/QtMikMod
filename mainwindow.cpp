@@ -43,13 +43,17 @@ MainWindow::MainWindow(QWidget *parent, QString filename, int updateTimer, int p
     vuMeter = new VuMeterWidget(this); // Parent is MainWindow
     vuMeter->show(); // Ensure it's visible
 
+    // Setup GUI timer
+    m_guiTimer = new QTimer(this);
+    connect(m_guiTimer, &QTimer::timeout, this, &MainWindow::updateVuMeter);
+    m_guiTimer->setInterval(pollTimer);
+
     // Connect signals
-    connect(player, &MikModPlayer::audioLevels, vuMeter, &VuMeterWidget::setAudioLevels);
     connect(player, &MikModPlayer::songFinished, this, &MainWindow::handleSongFinished);
 }
 
 MainWindow::~MainWindow() {
-    player->stopLevelPolling(); // Stop polling levels
+    m_guiTimer->stop();
     player->stopPlayback();
 }
 
@@ -58,7 +62,7 @@ void MainWindow::setup()
     // Directly load the module
     player->loadModule(m_fileName);
     player->start();
-    player->startLevelPolling(); // Start polling levels
+    m_guiTimer->start();
 }
 void MainWindow::setFilename(QString filename)
 {
@@ -68,13 +72,12 @@ void MainWindow::setFilename(QString filename)
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Space) { // Example: Spacebar to pause/resume
+        player->pausePlayback();
         if (player->isPlaying()) {
-            player->pausePlayback();
-            player->stopLevelPolling(); // Stop polling levels when paused
-            vuMeter->startDecay(); // Start VU meter decay when paused
+            m_guiTimer->start();
         } else {
-            player->pausePlayback(); // Resume playback by toggling pause
-            player->startLevelPolling(); // Start polling levels when resumed
+            m_guiTimer->stop();
+            vuMeter->startDecay(); // Start VU meter decay when paused
         }
     }
     QMainWindow::keyPressEvent(event); // Call base class implementation
@@ -92,12 +95,18 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
 
 void MainWindow::handleSongFinished() {
     qDebug() << "Song finished. Pausing for 3 seconds and restarting.";
-    player->stopLevelPolling(); // Stop polling levels
+    m_guiTimer->stop();
     player->stopPlayback(); // Ensure playback is stopped
     vuMeter->startDecay(); // Start VU meter decay
     QThread::sleep(3); // Pause for 3 seconds
     player->loadModule(m_fileName); // Reload the same module
     player->start(); // Start playback again
-    player->startLevelPolling(); // Start polling levels
+    m_guiTimer->start();
 }
 
+void MainWindow::updateVuMeter()
+{
+    if (player && player->isPlaying()) {
+        vuMeter->setAudioLevels(player->getCurrentLevels());
+    }
+}
