@@ -65,7 +65,7 @@ Il diagramma seguente illustra il flusso di dati e linterazione tra i componenti
 
 ```mermaid
 graph TD
-    subgraph Main Thread (GUI)
+    subgraph Main Thread GUI
         A[Avvio Applicazione] --> B(Crea MainWindow)
         B --> C{Crea MikModPlayer player
 Crea VuMeterWidget vuMeter
@@ -85,7 +85,7 @@ Crea QTimer m_guiTimer}
         K --> M[m_guiTimer.stop()/start()]
     end
 
-    subgraph "Worker Thread (Audio)"
+    subgraph "Worker Thread Audio"
         D -- avvia --> N[run()]
         N --> O{Crea e avvia QTimer m_updateTimer}
         subgraph "Ciclo di Update Audio"
@@ -94,7 +94,6 @@ Crea QTimer m_guiTimer}
             Q --> R((Scheda Audio))
         end
     end
-
 ```
 **Spiegazione del Diagramma:**
 1.  **Thread Principale (GUI)**:
