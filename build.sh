@@ -30,8 +30,8 @@ fi
 
 # Copy the AppImage from the container to the host
 echo "Copying AppImage from container to host..."
-# Assuming the AppImage is named QtMikMod-x86_64.AppImage in /app/
-docker cp $CONTAINER_NAME:/app/QtMikMod-x86_64.AppImage ./dist/
+# Assuming the AppImage is named MikModPlayer-x86_64.AppImage in /app/
+docker cp $CONTAINER_NAME:/app/MikModPlayer-x86_64.AppImage ./dist/
 
 if [ $? -ne 0 ]; then
     echo "Failed to copy AppImage from container."

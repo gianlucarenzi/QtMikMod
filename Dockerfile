@@ -66,7 +66,7 @@ RUN echo "Invalidating cache for library collection" && \
     ls -l AppDir/usr/lib
 
 # Create a basic .desktop file for the AppImage
-RUN echo "[Desktop Entry]\nName=QtMikMod\nExec=QtMikMod\nIcon=QtMikMod-icon\nType=Application\nCategories=Utility;\n" > AppDir/QtMikMod.desktop
+RUN echo "[Desktop Entry]\nName=MikModPlayer\nExec=MikModPlayer\nIcon=MikModPlayer-icon\nType=Application\nCategories=Utility;\n" > AppDir/MikModPlayer.desktop
 
 # Create the AppRun script
 RUN echo '#!/bin/bash\nHERE="$(dirname "$(readlink -f "${0}")")"\nexport LD_LIBRARY_PATH="$HERE"/usr/lib:"$HERE"/lib64:"$LD_LIBRARY_PATH"\nexport QT_QPA_PLATFORM_PLUGIN_PATH="$HERE"/usr/lib/qt5/plugins\nexport QT_QPA_FONTDIR="$HERE"/usr/share/QtMikMod/fonts\ncd "$HERE"/usr/share/QtMikMod/\nexec "./MikModPlayer" "$@"' > AppDir/AppRun && \
@@ -77,7 +77,7 @@ RUN mkdir -p AppDir/lib64 && \
     cp /lib64/ld-linux-x86-64.so.2 AppDir/lib64/
 
 # Copy the existing icon for the .desktop file and .DirIcon
-RUN cp ./bitmaps/icon.png AppDir/QtMikMod-icon.png
+RUN cp ./bitmaps/icon.png AppDir/MikModPlayer-icon.png
 RUN cp ./bitmaps/icon.png AppDir/.DirIcon
 
 # Create directories for Qt plugins
