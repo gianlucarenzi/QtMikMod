@@ -86,7 +86,7 @@ Crea QTimer m_guiTimer}
     end
 
     subgraph "Worker Thread Audio"
-        D -- avvia --> N[run()]
+        D -- avvia --> N["run()"]
         N --> O{Crea e avvia QTimer m_updateTimer}
         subgraph "Ciclo di Update Audio"
             O -- timeout --> P["updateMikMod()"]
