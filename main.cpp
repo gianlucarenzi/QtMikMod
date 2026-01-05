@@ -42,12 +42,31 @@ int main(int argc, char *argv[])
         a.setFont(amigaTopaz);
     }
     
-    MainWindow w;
+    // Default MOD to play
+    QString fileName = "mod/stardstm.mod";
+    int pollTimer = 50;
+    int updateTimer = 20;
+
+    if (argc > 3)
+    {
+        fileName = QString::fromLocal8Bit(argv[1]);
+        pollTimer = strtoul(argv[2], NULL, 10);
+        updateTimer = strtoul(argv[3], NULL, 10);
+    }
+    if (argc > 2)
+    {
+        fileName = QString::fromLocal8Bit(argv[1]);
+        pollTimer = strtoul(argv[2], NULL, 10);
+    }
     if (argc > 1)
     {
-        w.setFilename(argv[1]);
-        qDebug() << "Filename passed " << argv[1];
+        fileName = QString::fromLocal8Bit(argv[1]);
     }
+    qDebug() << "Filename passed " << fileName;
+    qDebug() << "pollTimer passed " << pollTimer;
+    qDebug() << "updateTimer passed " << updateTimer;
+
+    MainWindow w(nullptr, fileName, updateTimer, pollTimer);
 
     w.setup();
 

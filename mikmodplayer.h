@@ -15,7 +15,7 @@ class MikModPlayer : public QThread
     Q_OBJECT
 
 public:
-    explicit MikModPlayer(QObject *parent = nullptr);
+    explicit MikModPlayer(QObject *parent = nullptr, int updateTimer = 20, int pollTimer = 50);
     ~MikModPlayer();
 
     void loadModule(const QString &fileName);

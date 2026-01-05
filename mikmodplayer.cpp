@@ -5,46 +5,47 @@
 #include <algorithm>
 
 #ifdef Q_OS_WIN
-#ifndef Q_MOC_RUN
-// Definizione puntatori statici
-MikModPlayer::v_v     MikModPlayer::p_MikMod_RegisterAllDrivers = nullptr;
-MikModPlayer::v_v     MikModPlayer::p_MikMod_RegisterAllLoaders = nullptr;
-MikModPlayer::i_p     MikModPlayer::p_MikMod_Init = nullptr;
-MikModPlayer::v_v     MikModPlayer::p_MikMod_Exit = nullptr;
+    #ifndef Q_MOC_RUN
+        // Definitions of static pointers
+        MikModPlayer::v_v     MikModPlayer::p_MikMod_RegisterAllDrivers = nullptr;
+        MikModPlayer::v_v     MikModPlayer::p_MikMod_RegisterAllLoaders = nullptr;
+        MikModPlayer::i_p     MikModPlayer::p_MikMod_Init = nullptr;
+        MikModPlayer::v_v     MikModPlayer::p_MikMod_Exit = nullptr;
 
-MikModPlayer::m_p     MikModPlayer::p_Player_Load = nullptr;
-MikModPlayer::v_m_v   MikModPlayer::p_Player_Start = nullptr;
-MikModPlayer::v_v     MikModPlayer::p_Player_Stop = nullptr;
-MikModPlayer::i_v     MikModPlayer::p_Player_Active = nullptr;
-MikModPlayer::v_m     MikModPlayer::p_Player_Free = nullptr;
-MikModPlayer::v_v     MikModPlayer::p_MikMod_Update = nullptr;
+        MikModPlayer::m_p     MikModPlayer::p_Player_Load = nullptr;
+        MikModPlayer::v_m_v   MikModPlayer::p_Player_Start = nullptr;
+        MikModPlayer::v_v     MikModPlayer::p_Player_Stop = nullptr;
+        MikModPlayer::i_v     MikModPlayer::p_Player_Active = nullptr;
+        MikModPlayer::v_m     MikModPlayer::p_Player_Free = nullptr;
+        MikModPlayer::v_v     MikModPlayer::p_MikMod_Update = nullptr;
 
-MikModPlayer::v_i     MikModPlayer::p_Player_SetVolume = nullptr;
-MikModPlayer::v_v     MikModPlayer::p_Player_TogglePause = nullptr;
-MikModPlayer::i_uw_vp MikModPlayer::p_Player_QueryVoices = nullptr;
-MikModPlayer::ul_sb   MikModPlayer::p_Voice_RealVolume = nullptr;
-MikModPlayer::sb_ub   MikModPlayer::p_Player_GetChannelVoice = nullptr;
+        MikModPlayer::v_i     MikModPlayer::p_Player_SetVolume = nullptr;
+        MikModPlayer::v_v     MikModPlayer::p_Player_TogglePause = nullptr;
+        MikModPlayer::i_uw_vp MikModPlayer::p_Player_QueryVoices = nullptr;
+        MikModPlayer::ul_sb   MikModPlayer::p_Voice_RealVolume = nullptr;
+        MikModPlayer::sb_ub   MikModPlayer::p_Player_GetChannelVoice = nullptr;
 
-uint* MikModPlayer::p_md_mode = nullptr;
-uint* MikModPlayer::p_md_mixfreq = nullptr;
-uint* MikModPlayer::p_md_devicebuffer = nullptr;
-int*  MikModPlayer::p_Player_Volume = nullptr;
+        uint* MikModPlayer::p_md_mode = nullptr;
+        uint* MikModPlayer::p_md_mixfreq = nullptr;
+        uint* MikModPlayer::p_md_devicebuffer = nullptr;
+        int*  MikModPlayer::p_Player_Volume = nullptr;
+    #endif
 #endif
-#endif
 
-MikModPlayer::MikModPlayer(QObject *parent)
-    : QThread(parent)
+MikModPlayer::MikModPlayer(QObject *parent, int updateTimer, int pollTimer)
+: QThread(parent)
 {
     libLoaded = initLibrary();
 
     m_levelTimer = new QTimer(this);
     connect(m_levelTimer, &QTimer::timeout, this, &MikModPlayer::pollAudioLevels);
-    m_levelTimer->setInterval(50);
+    m_levelTimer->setInterval(pollTimer);
 
     m_updateTimer = new QTimer(this);
     connect(m_updateTimer, &QTimer::timeout, this, &MikModPlayer::updateMikMod);
-    m_updateTimer->setInterval(15);
+    m_updateTimer->setInterval(updateTimer);
 
+    qDebug() << __PRETTY_FUNCTION__ << "Timer passed (ms) " << m_levelTimer->interval() << "Update (ms): " << m_updateTimer->interval();
     connect(this, &MikModPlayer::requestStartLevelPolling, this, &MikModPlayer::m_startLevelPolling);
     connect(this, &MikModPlayer::requestStopLevelPolling, this, &MikModPlayer::m_stopLevelPolling);
     connect(this, &MikModPlayer::requestStartUpdateTimer, this, &MikModPlayer::m_startUpdateTimer);
@@ -165,19 +166,17 @@ void MikModPlayer::updateMikMod()
 #ifdef Q_OS_WIN
         if (p_Player_Active && p_Player_Active()) {
             if (p_MikMod_Update) (*p_MikMod_Update)();
-        } else {
-            keepPlaying = false;
-            m_stopUpdateTimer();
-            emit songFinished();
         }
 #else
-        if (Player_Active()) MikMod_Update();
+        if (Player_Active()) {
+            MikMod_Update();
+        }
+#endif
         else {
             keepPlaying = false;
             m_stopUpdateTimer();
             emit songFinished();
         }
-#endif
     }
 }
 

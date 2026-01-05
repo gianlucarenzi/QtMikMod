@@ -6,9 +6,9 @@
 #define TOSTRING(x) STRINGIFY(x)
 #endif
 
-MainWindow::MainWindow(QWidget *parent, QString filename)
+MainWindow::MainWindow(QWidget *parent, QString filename, int updateTimer, int pollTimer)
 : QMainWindow(parent),
-  player(new MikModPlayer(this)),
+  player(new MikModPlayer(this, updateTimer, pollTimer)),
   m_fileName(filename)
 {
     // Set dark gray background for the main window

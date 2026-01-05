@@ -12,7 +12,7 @@
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = nullptr, QString fileName = "mod/stardstm.mod");
+    MainWindow(QWidget *parent = nullptr, QString fileName = "mod/stardstm.mod", int updateTimer = 20, int pollTimer = 50);
     ~MainWindow();
     void setFilename(QString filename);
     void setup();
