@@ -70,30 +70,31 @@ graph TD
         B --> C{Crea MikModPlayer player
 Crea VuMeterWidget vuMeter
 Crea QTimer m_guiTimer}
-                C --> D[player.start()]
-                C --> E[m_guiTimer.start()]
+        C --> D["player.start()"]
+        C --> E["m_guiTimer.start()"]
 
         subgraph "Ciclo di Update Grafico"
-            E -- timeout --> F[updateVuMeter()]
-            F --> G{levels = player.getCurrentLevels()}
-            G --> H[vuMeter.setAudioLevels(levels)]
-            H --> I[vuMeter.repaint()]
+            E -- timeout --> F["updateVuMeter()"]
+            F --> G{"levels = player.getCurrentLevels()"}
+            G --> H["vuMeter.setAudioLevels(levels)"]
+            H --> I["vuMeter.repaint()"]
         end
 
-        J[Input Utente (es. Spazio)] --> K{Pausa/Riprendi}
-        K --> L[player.pausePlayback()]
-        K --> M[m_guiTimer.stop()/start()]
+        J[Input Utente es. Spazio] --> K{Pausa/Riprendi}
+        K --> L["player.pausePlayback()"]
+        K --> M["m_guiTimer.stop()/start()"]
     end
 
     subgraph "Worker Thread Audio"
         D -- avvia --> N[run()]
         N --> O{Crea e avvia QTimer m_updateTimer}
         subgraph "Ciclo di Update Audio"
-            O -- timeout --> P[updateMikMod()]
-            P --> Q[libmikmod: MikMod_Update()]
+            O -- timeout --> P["updateMikMod()"]
+            P --> Q["libmikmod: MikMod_Update()"]
             Q --> R((Scheda Audio))
         end
     end
+    style R fill:#f9f,stroke:#333,stroke-width:2px
 ```
 **Spiegazione del Diagramma:**
 1.  **Thread Principale (GUI)**:
