@@ -64,7 +64,7 @@ void VuMeterWidget::resetLevels()
 {
     m_currentLevels.fill(0.0f);
     m_peakLevels.fill(0.0f);
-    update();
+    repaint();
 }
 
 void VuMeterWidget::startDecay()
@@ -162,6 +162,6 @@ void VuMeterWidget::decayLevels()
     }
 
     if (changed) {
-        update(); // Request repaint if levels have changed
+        repaint(); // Request repaint if levels have changed
     }
 }
