@@ -39,10 +39,12 @@ MikModPlayer::MikModPlayer(QObject *parent, int updateTimer, int pollTimer)
     libLoaded = initLibrary();
 
     m_levelTimer = new QTimer(this);
+    m_levelTimer->setTimerType(Qt::PreciseTimer);
     connect(m_levelTimer, &QTimer::timeout, this, &MikModPlayer::pollAudioLevels);
     m_levelTimer->setInterval(pollTimer);
 
     m_updateTimer = new QTimer(this);
+    m_updateTimer->setTimerType(Qt::PreciseTimer);
     connect(m_updateTimer, &QTimer::timeout, this, &MikModPlayer::updateMikMod);
     m_updateTimer->setInterval(updateTimer);
 
