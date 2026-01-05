@@ -4,7 +4,7 @@
 
 Questo progetto nasce come un'esplorazione di diverse tecniche di sviluppo software in C++ con Qt, tra cui:
 - Creazione di widget personalizzati (`VuMeterWidget`).
-- Gestione del multithreading per separare linterfaccia grafica (GUI) dal backend audio.
+- Gestione del multithreading per separare l'interfaccia grafica (GUI) dal backend audio.
 - Integrazione di librerie esterne.
 - Creazione di pipeline di Continuous Integration/Continuous Deployment (CI/CD) con GitHub Actions per la compilazione automatica su Linux, Windows e macOS.
 
@@ -12,7 +12,7 @@ Questo progetto nasce come un'esplorazione di diverse tecniche di sviluppo softw
 
 - **Riproduzione di file MOD**: Carica e riproduce file musicali in formato "module".
 - **VU Meter in Tempo Reale**: Visualizza i livelli di volume di ogni canale audio con un widget personalizzato.
-- **Architettura Multi-thread**: Un thread dedicato alla riproduzione audio assicura che linterfaccia grafica rimanga sempre reattiva.
+- **Architettura Multi-thread**: Un thread dedicato alla riproduzione audio assicura che l'interfaccia grafica rimanga sempre reattiva.
 - **Cross-Platform**: Grazie a Qt e a CI/CD, il progetto viene compilato per Linux (AppImage), Windows (ZIP portable) e macOS (DMG).
 
 ## 🛠️ Compilazione del Progetto
@@ -50,8 +50,8 @@ L'eseguibile `MikModPlayer` verrà creato nella directory corrente.
 
 ## 📂 Struttura del Progetto
 
-- `main.cpp`: Punto di ingresso dellapplicazione.
-- `mainwindow.h`, `mainwindow.cpp`: Gestisce la finestra principale, linterfaccia utente (widget, layout) e linterazione con lutente.
+- `main.cpp`: Punto di ingresso dell'applicazione.
+- `mainwindow.h`, `mainwindow.cpp`: Gestisce la finestra principale, l'interfaccia utente (widget, layout) e l'interazione con l'utente.
 - `mikmodplayer.h`, `mikmodplayer.cpp`: Classe che gestisce il backend audio in un thread separato. Interagisce direttamente con `libmikmod`.
 - `vumeterwidget.h`, `vumeterwidget.cpp`: Widget personalizzato che disegna i VU meter.
 - `MikModPlayer.pro`: File di progetto di `qmake`.
@@ -61,7 +61,7 @@ L'eseguibile `MikModPlayer` verrà creato nella directory corrente.
 
 ## 📊 Architettura del Codice
 
-Il diagramma seguente illustra il flusso di dati e linterazione tra i componenti principali dellapplicazione.
+Il diagramma seguente illustra il flusso di dati e l'interazione tra i componenti principali dell'applicazione.
 
 ```mermaid
 graph TD
@@ -98,44 +98,44 @@ Crea QTimer m_guiTimer}
 ```
 **Spiegazione del Diagramma:**
 1.  **Thread Principale (GUI)**:
-    - Allavvio, `MainWindow` crea il player audio, il VU meter e un timer (`m_guiTimer`) per gli aggiornamenti grafici.
+    - All'avvio, `MainWindow` crea il player audio, il VU meter e un timer (`m_guiTimer`) per gli aggiornamenti grafici.
     - Il `m_guiTimer` scatta a intervalli regolari e chiama `updateVuMeter()`.
     - `updateVuMeter()` chiede i livelli audio correnti al thread del player (`player.getCurrentLevels()`) e li passa al `VuMeterWidget`, che si ridisegna.
-    - Gestisce anche linput dellutente.
+    - Gestisce anche l'input dellutente.
 2.  **Thread Secondario (Audio)**:
-    - Allavvio (`player.start()`), viene creato un nuovo thread.
-    - Allinterno di questo thread, un altro timer (`m_updateTimer`) si occupa di chiamare periodicamente `MikMod_Update()`.
-    - Questa funzione riempie il buffer della scheda audio, garantendo una riproduzione fluida e senza interruzioni, indipendentemente da ciò che fa linterfaccia grafica.
+    - All'avvio (`player.start()`), viene creato un nuovo thread.
+    - All'interno di questo thread, un altro timer (`m_updateTimer`) si occupa di chiamare periodicamente `MikMod_Update()`.
+    - Questa funzione riempie il buffer della scheda audio, garantendo una riproduzione fluida e senza interruzioni, indipendentemente da ciò che fa l'interfaccia grafica.
     
-Questa architettura garantisce che uninterfaccia grafica pesante o bloccata non interrompa mai la musica.
+Questa architettura garantisce che un'interfaccia grafica pesante o bloccata non interrompa mai la musica.
 
 ## 🚀 Workflow di CI/CD (GitHub Actions)
 
 Il progetto utilizza GitHub Actions per automatizzare la compilazione, il test e il rilascio per diverse piattaforme.
 
 ### `build-linux.yml`
-- **Scopo**: Compila lapplicazione per Linux e crea un `AppImage`.
+- **Scopo**: Compila l'applicazione per Linux e crea un `AppImage`.
 - **Trigger**: Si attiva ad ogni `push` o `pull_request` sui rami `main`/`master`, e quando viene creata una nuova release.
 - **Processo**:
     1. Esegue uno script `build.sh` (non presente nel listato, ma dedotto dal workflow) che si occupa di installare le dipendenze e creare un pacchetto `AppImage`.
-    2. Carica lartefatto `QtMikMod-x86_64.AppImage` per ogni build.
-    3. Se la build è stata attivata da una release, carica lAppImage come asset di quella release su GitHub.
+    2. Carica l'artefatto `MikModPlayer-x86_64.AppImage` per ogni build.
+    3. Se la build è stata attivata da una release, carica l'AppImage come asset di quella release su GitHub.
 
 ### `build-windows.yml`
-- **Scopo**: Compila lapplicazione per Windows a 64 bit.
+- **Scopo**: Compila l'applicazione per Windows a 64 bit.
 - **Trigger**: Come per Linux.
 - **Processo**:
-    1. Utilizza `jurplel/install-qt-action` per installare lambiente Qt (MSVC 2019).
+    1. Utilizza `jurplel/install-qt-action` per installare l'ambiente Qt (MSVC 2019).
     2. Installa `vcpkg` per gestire le dipendenze C++.
     3. Installa `libmikmod` tramite `vcpkg`.
     4. Compila il progetto usando `qmake` e `nmake`.
     5. Utilizza `windeployqt` per raccogliere tutte le DLL di Qt necessarie.
     6. Copia manualmente le DLL di `libmikmod` e del runtime di Visual C++.
-    7. Crea un pacchetto `.zip` contenente leseguibile e tutte le dipendenze, pronto per luso.
+    7. Crea un pacchetto `.zip` contenente l'eseguibile e tutte le dipendenze, pronto per luso.
     8. Carica lo `.zip` come artefatto e, in caso di release, come asset.
 
 ### `build-macos.yml`
-- **Scopo**: Compila lapplicazione per macOS.
+- **Scopo**: Compila l'applicazione per macOS.
 - **Trigger**: Come per Linux.
 - **Processo**:
     1. Installa Qt usando `jurplel/install-qt-action`.
