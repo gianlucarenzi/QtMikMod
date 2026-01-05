@@ -57,7 +57,7 @@ L'eseguibile `MikModPlayer` verrà creato nella directory corrente.
 - `MikModPlayer.pro`: File di progetto di `qmake`.
 - `.github/workflows/`: Contiene le pipeline di CI/CD per la compilazione automatica.
 - `3rdparty/`: Contiene le librerie di terze parti (se non fornite dal sistema).
-- `mod/`, `fonts/`, `bitmaps/`: Risorse dellapplicazione come file musicali, font e icone.
+- `mod/`, `fonts/`, `bitmaps/`: Risorse dell'applicazione come file musicali, font e icone.
 
 ## 📊 Architettura del Codice
 
@@ -101,7 +101,7 @@ Crea QTimer m_guiTimer}
     - All'avvio, `MainWindow` crea il player audio, il VU meter e un timer (`m_guiTimer`) per gli aggiornamenti grafici.
     - Il `m_guiTimer` scatta a intervalli regolari e chiama `updateVuMeter()`.
     - `updateVuMeter()` chiede i livelli audio correnti al thread del player (`player.getCurrentLevels()`) e li passa al `VuMeterWidget`, che si ridisegna.
-    - Gestisce anche l'input dellutente.
+    - Gestisce anche l'input dell'utente.
 2.  **Thread Secondario (Audio)**:
     - All'avvio (`player.start()`), viene creato un nuovo thread.
     - All'interno di questo thread, un altro timer (`m_updateTimer`) si occupa di chiamare periodicamente `MikMod_Update()`.
