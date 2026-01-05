@@ -95,7 +95,6 @@ Crea QTimer m_guiTimer}
         end
     end
 
-    style R fill:#f9f,stroke:#333,stroke-width:2px
 ```
 **Spiegazione del Diagramma:**
 1.  **Thread Principale (GUI)**:
