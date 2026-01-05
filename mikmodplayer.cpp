@@ -30,6 +30,7 @@
         uint* MikModPlayer::p_md_devicebuffer = nullptr;
         int*  MikModPlayer::p_Player_Volume = nullptr;
     #endif
+    #define __PRETTY_FUNCTION__ "MikModPlayer::MikModPlayer(QObject, int, int)"
 #endif
 
 MikModPlayer::MikModPlayer(QObject *parent, int updateTimer, int pollTimer)
