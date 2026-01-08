@@ -5,3 +5,4 @@
 moc_*.*
 /qrc_resources.cpp
 /MikModPlayer.pro.user
+/dist/
