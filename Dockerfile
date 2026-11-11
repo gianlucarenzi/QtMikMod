@@ -10,7 +10,7 @@ RUN apt-get update && \
     apt-get install -y build-essential git cmake qt5-default qttools5-dev-tools libqt5serialport5-dev patchelf libmikmod-dev curl xz-utils
 
 # Download and extract appimagetool
-RUN curl -L https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -o /tmp/appimagetool.AppImage && \
+RUN curl -L https://github.com/gianlucarenzi/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -o /tmp/appimagetool.AppImage && \
     chmod +x /tmp/appimagetool.AppImage && \
     /tmp/appimagetool.AppImage --appimage-extract && \
     mv squashfs-root /usr/local/appimagetool_extracted && \
